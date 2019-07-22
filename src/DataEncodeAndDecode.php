@@ -12,7 +12,7 @@ class DataEncodeAndDecode{
 	
 	public function encode($text){
 		$encrypted = openssl_encrypt($text, 'aes-256-cbc', base64_decode($this->key), OPENSSL_RAW_DATA, base64_decode($this->iv));
-		return array(base64_encode($encrypted), $this->iv);
+		return array(base64_encode($encrypted), md5($this->iv."+_+".$text));
 	}
 	public function decode($text){
 		return openssl_decrypt(base64_decode($text), 'aes-256-cbc', base64_decode($this->key), OPENSSL_RAW_DATA, base64_decode($this->iv));
