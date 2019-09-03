@@ -27,12 +27,12 @@ class Tools {
 
     public function qUrl($subjectId, $questionId) {//题目编号加密
         $questionIdStr = sprintf("%010d", $questionId);
-        return $this->getUriBySubjectId($subjectId) . "q/" . substr($questionIdStr, 0, 5) . md5($this->key . "_" . $this->iv . "s_" . $subjectId . "_" . $questionId . "_" . $questionIdStr) . substr($questionIdStr, 0, -5) . ".html";
+        return $this->getUriBySubjectId($subjectId) . "q/" . substr($questionIdStr, 0, 5) . md5($this->key . "_" . $this->iv . "s_" . $subjectId . "_" . $questionId . "_" . $questionIdStr) . substr($questionIdStr,-5) . ".html";
     }
 
     public function sUrl($subjectId, $shijuanId) {//试卷编号加密
         $shijuanIdStr = sprintf("%010d", $shijuanId);
-        return $this->getUriBySubjectId($subjectId) . "s/" . substr($shijuanIdStr, 0, 5) . md5($this->key . "_" . $this->iv . "q_" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, 0, -5) . ".html";
+        return $this->getUriBySubjectId($subjectId) . "s/" . substr($shijuanIdStr, 0, 5) . md5($this->key . "_" . $this->iv . "q_" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr,-5) . ".html";
     }
 
     public function qId($uri) {//获取试题id
@@ -41,8 +41,8 @@ class Tools {
         if (is_int($subjectId)) {
             $questionStr = explode(".", $uri[1]);
             $questionStr = $questionStr[0];
-            $questionId = (int) (substr($questionStr, 0, 5) . substr($questionStr, 0, -5));
-            if (md5($this->key . "_" . $this->iv . "s_" . $subjectId . "_" . $questionId . "_" . substr($questionStr, 0, 5) . substr($questionStr, 0, -5)) === substr($questionStr, 6, 32)) {
+            $questionId = (int) (substr($questionStr, 0, 5) . substr($questionStr,-5));
+            if (md5($this->key . "_" . $this->iv . "s_" . $subjectId . "_" . $questionId . "_" . substr($questionStr, 0, 5) . substr($questionStr,-5)) === substr($questionStr, 6, 32)) {
                 return $questionId;
             }
         }
@@ -55,8 +55,8 @@ class Tools {
         if (is_int($subjectId)) {
             $shijuanStr = explode(".", $uri[1]);
             $shijuanStr = $shijuanStr[0];
-            $shijuanId = (int) (substr($shijuanStr, 0, 5) . substr($shijuanStr, 0, -5));
-            if (md5($this->key . "_" . $this->iv . "q_" . $subjectId . "_" . $shijuanId . "_" . substr($shijuanStr, 0, 5) . substr($shijuanStr, 0, -5)) === substr($shijuanStr, 6, 32)) {
+            $shijuanId = (int) (substr($shijuanStr, 0, 5) . substr($shijuanStr,-5));
+            if (md5($this->key . "_" . $this->iv . "q_" . $subjectId . "_" . $shijuanId . "_" . substr($shijuanStr, 0, 5) . substr($shijuanStr,-5)) === substr($shijuanStr, 6, 32)) {
                 return $shijuanId;
             }
         }
