@@ -4,7 +4,7 @@
     "description": "常用数据加密和解密处理方法",
     "keywords": ["openssl", "openssl_encrypt", "openssl_decrypt", "base64_encode"],
     "license": "Apache-2.0",
-    "authors": [{"name": "linjuchen", "email": "cmmia@163.com"}],
+    "authors": [{"name": "linbaoling", "email": "32026804@qq.com"}],
     "require": {
         "php": "^7.1"
     },
