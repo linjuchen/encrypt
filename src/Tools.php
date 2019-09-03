@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmmia\Helper;
+namespace Cmmia\Encrypt;
 
 class Tools {
 
