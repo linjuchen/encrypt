@@ -1,1 +1,1 @@
-常用到的客户端用户信息加解密方法。
+ Record your daily methods 
