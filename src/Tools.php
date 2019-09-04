@@ -37,7 +37,7 @@ class Tools {
 
     public function qId($uri) {//获取试题id
         $uri = explode("/q/", $uri);
-        $subjectId = $this->getSubjectIdByUri($uri[0]);
+        $subjectId = $this->getSubjectIdByUri($uri[0]."/");
         if (is_int($subjectId)) {
             $questionStr = explode(".", $uri[1]);
             $questionStr = $questionStr[0];
@@ -51,7 +51,7 @@ class Tools {
 
     public function sId($uri) {//获取试卷id
         $uri = explode("/s/", $uri);
-        $subjectId = $this->getSubjectIdByUri($uri[0]);
+        $subjectId = $this->getSubjectIdByUri($uri[0]."/");
         if (is_int($subjectId)) {
             $shijuanStr = explode(".", $uri[1]);
             $shijuanStr = $shijuanStr[0];
