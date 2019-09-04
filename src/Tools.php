@@ -42,7 +42,7 @@ class Tools {
             $questionStr = explode(".", $uri[1]);
             $questionStr = $questionStr[0];
             $questionId = (int) (substr($questionStr, 0, 5) . substr($questionStr,-5));
-            if (md5($this->key . "_" . $this->iv . "s_" . $subjectId . "_" . $questionId . "_" . substr($questionStr, 0, 5) . substr($questionStr,-5)) === substr($questionStr, 6, 32)) {
+            if (md5($this->key . "_" . $this->iv . "s_" . $subjectId . "_" . $questionId . "_" . substr($questionStr, 0, 5) . substr($questionStr,-5)) === substr($questionStr, 5, 32)) {
                 return $questionId;
             }
         }
@@ -56,7 +56,7 @@ class Tools {
             $shijuanStr = explode(".", $uri[1]);
             $shijuanStr = $shijuanStr[0];
             $shijuanId = (int) (substr($shijuanStr, 0, 5) . substr($shijuanStr,-5));
-            if (md5($this->key . "_" . $this->iv . "q_" . $subjectId . "_" . $shijuanId . "_" . substr($shijuanStr, 0, 5) . substr($shijuanStr,-5)) === substr($shijuanStr, 6, 32)) {
+            if (md5($this->key . "_" . $this->iv . "q_" . $subjectId . "_" . $shijuanId . "_" . substr($shijuanStr, 0, 5) . substr($shijuanStr,-5)) === substr($shijuanStr, 5, 32)) {
                 return $shijuanId;
             }
         }
