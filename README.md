@@ -1,1 +1,4 @@
- Record your daily methods 
+
+## 功能特色
+
+ - 增加图片URL方法
