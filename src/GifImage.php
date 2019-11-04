@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmmia\Image;
+namespace Cmmia\Encrypt;
 class GifImage
 {
     private $image = null;
@@ -20,7 +20,7 @@ class GifImage
     // 载入图像
     public function open($path)
     {
-        $this->image = new Imagick($path);
+        $this->image = new \Imagick($path);
         if ($this->image) {
             $this->type = strtolower($this->image->getImageFormat());
         }
@@ -36,11 +36,11 @@ class GifImage
 
         if ($this->type == 'gif') {
             $image = $this->image;
-            $canvas = new Imagick();
+            $canvas = new \Imagick();
 
             $images = $image->coalesceImages();
             foreach ($images as $frame) {
-                $img = new Imagick();
+                $img = new \Imagick();
                 $img->readImageBlob($frame);
                 $img->cropImage($width, $height, $x, $y);
 
@@ -81,11 +81,11 @@ class GifImage
             case 'force':
                 if ($this->type == 'gif') {
                     $image = $this->image;
-                    $canvas = new Imagick();
+                    $canvas = new \Imagick();
 
                     $images = $image->coalesceImages();
                     foreach ($images as $frame) {
-                        $img = new Imagick();
+                        $img = new \Imagick();
                         $img->readImageBlob($frame);
                         $img->thumbnailImage($width, $height, false);
 
@@ -102,9 +102,9 @@ class GifImage
                 if ($this->type == 'gif') {
                     $image = $this->image;
                     $images = $image->coalesceImages();
-                    $canvas = new Imagick();
+                    $canvas = new \Imagick();
                     foreach ($images as $frame) {
-                        $img = new Imagick();
+                        $img = new \Imagick();
                         $img->readImageBlob($frame);
                         $img->thumbnailImage($width, $height, true);
 
@@ -137,7 +137,7 @@ class GifImage
                 }
 
                 $image = $this->image;
-                $canvas = new Imagick();
+                $canvas = new \Imagick();
 
                 $color = 'rgba(' . $fill_color[0] . ',' . $fill_color[1] . ',' . $fill_color[2] . ',' . $fill_color[3] . ')';
                 if ($this->type == 'gif') {
@@ -145,10 +145,10 @@ class GifImage
                     foreach ($images as $frame) {
                         $frame->thumbnailImage($width, $height, true);
 
-                        $draw = new ImagickDraw();
+                        $draw = new \ImagickDraw();
                         $draw->composite($frame->getImageCompose(), $x, $y, $dst_width, $dst_height, $frame);
 
-                        $img = new Imagick();
+                        $img = new \Imagick();
                         $img->newImage($width, $height, $color, 'gif');
                         $img->drawImage($draw);
 
@@ -159,7 +159,7 @@ class GifImage
                 } else {
                     $image->thumbnailImage($width, $height, true);
 
-                    $draw = new ImagickDraw();
+                    $draw = new \ImagickDraw();
                     $draw->composite($image->getImageCompose(), $x, $y, $dst_width, $dst_height, $image);
 
                     $canvas->newImage($width, $height, $color, $this->get_type());
@@ -229,12 +229,12 @@ class GifImage
                 }
 
                 $image = $this->image;
-                $canvas = new Imagick();
+                $canvas = new \Imagick();
 
                 if ($this->type == 'gif') {
                     $images = $image->coalesceImages();
                     foreach ($images as $frame) {
-                        $img = new Imagick();
+                        $img = new \Imagick();
                         $img->readImageBlob($frame);
                         $img->cropImage($crop_w, $crop_h, $crop_x, $crop_y);
                         $img->thumbnailImage($width, $height, true);
@@ -259,16 +259,16 @@ class GifImage
     // 添加水印图片
     public function add_watermark($path, $x = 0, $y = 0)
     {
-        $watermark = new Imagick($path);
-        $draw = new ImagickDraw();
+        $watermark = new \Imagick($path);
+        $draw = new \ImagickDraw();
         $draw->composite($watermark->getImageCompose(), $x, $y, $watermark->getImageWidth(), $watermark->getimageheight(), $watermark);
 
         if ($this->type == 'gif') {
             $image = $this->image;
-            $canvas = new Imagick();
+            $canvas = new \Imagick();
             $images = $image->coalesceImages();
             foreach ($image as $frame) {
-                $img = new Imagick();
+                $img = new \Imagick();
                 $img->readImageBlob($frame);
                 $img->drawImage($draw);
 
@@ -286,7 +286,7 @@ class GifImage
     // 添加水印文字
     public function add_text($text, $x = 0, $y = 0, $angle = 0, $style = array())
     {
-        $draw = new ImagickDraw();
+        $draw = new \ImagickDraw();
         if (isset($style['font'])) $draw->setFont($style['font']);
         if (isset($style['font_size'])) $draw->setFontSize($style['font_size']);
         if (isset($style['fill_color'])) $draw->setFillColor($style['fill_color']);
@@ -369,7 +369,7 @@ class GifImage
     */
     public function border($width, $height, $color = 'rgb(220, 220, 220)')
     {
-        $color = new ImagickPixel();
+        $color = new \ImagickPixel();
         $color->setColor($color);
         $this->image->borderImage($color, $width, $height);
     }
