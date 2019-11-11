@@ -25,12 +25,13 @@ class Pagination
     public $pageCount;
     //配置
     public $options = ['simple' => false, 'style' => 1, 'allCounts' => false, 'nowAllPage' => false, 'toPage' => false, 'prev_mark' => '«', 'next_mark' => '»'];
+    private $request;
 
     public function __construct($target, $defaultPageSize = 8, $options = [])
     {
-
+        $this->request = context()->getRequest();
         if (!is_array($target) || !$target) {
-            throw new Exception("分页内容不能为空", 1);
+            $target = [];
         }
         $this->target = $target;
         $this->totalCount = count($target);
@@ -47,7 +48,7 @@ class Pagination
      */
     protected function getPage()
     {
-        $page = isset($_GET['page']) ? $_GET['page'] : 1;
+        $page = $this->request->get('page') ?? 1;
         if ($page < 1) {
             $page = 1;
         }
@@ -284,14 +285,13 @@ class Pagination
 
     protected function getToPage()
     {
-        $server = $_SERVER;
         return '<span class="hbb-page">到第<input  value="' . $this->pageNow . '" id="to-page-input" class="" type="text">页<button type="button" class="hbb-button hbb-to-page" id="hbb-button">确定</button></span>
              <script>
                 button = document.getElementById(`hbb-button`)
                 button.onclick = function(){
                 page = document.getElementById(`to-page-input`).value
-                baseUrl = "' . $this->getBaseUrl($server) . '";
-                query = ' . json_encode($this->getParams($server, $this->pageNow)) . ';
+                baseUrl = "' . $this->getBaseUrl() . '";
+                query = ' . json_encode($this->getParams($this->pageNow)) . ';
                 query["page"] = page
                 params = ""
                 k = 0
@@ -313,49 +313,35 @@ class Pagination
 
     /**
      * 获取当前的url
-     * @param  [type] $server [description]
-     * @return [type]         [description]
      */
-    protected function getUrl($server)
+    protected function getUrl()
     {
-
-        $protocol = ((!empty($server['HTTPS']) && $server['HTTPS'] != 'off') || $server['SERVER_PORT'] == 443) ? "https://" : "http://";
-        $url = $protocol . $server['HTTP_HOST'] . $server['REQUEST_URI'];
-        return $url;
+        $uri = $this->request->getUri();
+        return $uri->getScheme() . '://' . $uri->getHost() . $uri->getPath() . !empty($uri->getQuery) ?? "?" . $uri->getQuery;
     }
 
     /**
      * 获取baseUrl
-     * @param  [type] $server [description]
-     * @return [type]         [description]
      */
-    protected function getBaseUrl($server)
+    protected function getBaseUrl()
     {
-
-        $getUrl = $this->getUrl($server);
-        $parse = parse_url($getUrl);
-        //获取url
-        return $parse['scheme'] . '://' . $parse['host'] . $parse['path'];
+        $uri = $this->request->getUri();
+        return $uri->getScheme() . '://' . $uri->getHost() . $uri->getPath();
     }
 
     /**
      * 获取params
-     * @param  [type]  $server [description]
-     * @param integer $page [description]
-     * @return [type]          [description]
      */
-    protected function getParams($server, $page = 1)
+    protected function getParams($page = 1)
     {
 
-        $getUrl = $this->getUrl($server);
-
+        $getUrl = $this->getUrl();
         $parse = parse_url($getUrl);
         $query = [];
         //获取参数
         if (isset($parse['query'])) {
             parse_str($parse['query'], $query);
         }
-
         //替换page参数
         $query['page'] = $page;
         return $query;
@@ -371,12 +357,9 @@ class Pagination
         if ($page < 1) {
             $page = 1;
         }
-
-        $server = $_SERVER;
         //获取url
-        $baseUrl = $this->getBaseUrl($server);
-
-        $param = http_build_query($this->getParams($server, $page));
+        $baseUrl = $this->getBaseUrl();
+        $param = http_build_query($this->getParams($page));
         //生成url
         $url = $baseUrl . '?' . $param;
 
