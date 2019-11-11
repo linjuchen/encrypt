@@ -8,9 +8,6 @@ namespace Cmmia\Encrypt;
  */
 class Pagination
 {
-
-    //带分页的数组
-    public $target;
     //数组的大小
     public $totalCount;
     //每页的数目
@@ -27,14 +24,10 @@ class Pagination
     public $options = ['simple' => false, 'style' => 1, 'allCounts' => false, 'nowAllPage' => false, 'toPage' => false, 'prev_mark' => '«', 'next_mark' => '»'];
     private $request;
 
-    public function __construct($target, $defaultPageSize = 8, $options = [])
+    public function __construct(int $totalCount, $defaultPageSize = 8, $options = [])
     {
         $this->request = context()->getRequest();
-        if (!is_array($target) || !$target) {
-            $target = [];
-        }
-        $this->target = $target;
-        $this->totalCount = count($target);
+        $this->totalCount = $totalCount;
         $this->defaultPageSize = $defaultPageSize;
         $this->options = array_merge($this->options, $options);
         //获取总页数
@@ -139,17 +132,6 @@ class Pagination
         }
         return $urls;
     }
-
-    /**
-     * 获取分页后的数组
-     * @return [type] [description]
-     */
-    public function getItem()
-    {
-
-        return array_slice($this->target, $this->offset(), $this->limit());
-    }
-
     /**
      * 渲染分页样式
      * @return [type] [description]
