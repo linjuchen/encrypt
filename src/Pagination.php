@@ -132,6 +132,7 @@ class Pagination
         }
         return $urls;
     }
+
     /**
      * 渲染分页样式
      * @return [type] [description]
@@ -299,7 +300,8 @@ class Pagination
     protected function getUrl()
     {
         $uri = $this->request->getUri();
-        return $uri->getScheme() . '://' . $uri->getHost() . $uri->getPath() . !empty($uri->getQuery) ?? "?" . $uri->getQuery;
+        $query = empty($uri->getQuery()) ? "" : "?" . $uri->getQuery();
+        return $uri->getScheme() . '://' . $uri->getHost() . $uri->getPath() . $query;
     }
 
     /**
