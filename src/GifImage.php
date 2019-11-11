@@ -1,432 +1,410 @@
 <?php
 
 namespace Cmmia\Encrypt;
-class GifImage
+/**
+ * 分页
+ * Class Pagination
+ * @package Cmmia\Encrypt
+ */
+class Pagination
 {
-    private $image = null;
-    private $type = null;
 
-    // 构造函数
-    public function __construct()
-    {
-    }
+    //带分页的数组
+    public $target;
+    //数组的大小
+    public $totalCount;
+    //每页的数目
+    public $defaultPageSize;
+    //当前页
+    public $pageNow;
+    //上一页
+    public $pagePrev;
+    //下一页
+    public $pageNext;
+    //总页数
+    public $pageCount;
+    //配置
+    public $options = ['simple' => false, 'style' => 1, 'allCounts' => false, 'nowAllPage' => false, 'toPage' => false, 'prev_mark' => '«', 'next_mark' => '»'];
+    private $request;
 
-    // 析构函数
-    public function __destruct()
+    public function __construct($target, $defaultPageSize = 8, $options = [])
     {
-        if ($this->image !== null) $this->image->destroy();
-    }
-
-    // 载入图像
-    public function open($path)
-    {
-        $this->image = new \Imagick($path);
-        if ($this->image) {
-            $this->type = strtolower($this->image->getImageFormat());
+        $this->request = context()->getRequest();
+        if (!is_array($target) || !$target) {
+            $target = [];
         }
-        return $this->image;
+        $this->target = $target;
+        $this->totalCount = count($target);
+        $this->defaultPageSize = $defaultPageSize;
+        $this->options = array_merge($this->options, $options);
+        //获取总页数
+        $this->getPageCount();
+        $this->getPage();
     }
 
-
-    public function crop($x = 0, $y = 0, $width = null, $height = null)
+    /**
+     * 得到page
+     * @return [type] [description]
+     */
+    protected function getPage()
     {
-        if ($width == null) $width = $this->image->getImageWidth() - $x;
-        if ($height == null) $height = $this->image->getImageHeight() - $y;
-        if ($width <= 0 || $height <= 0) return;
+        $page = $this->request->get('page') ?? 1;
+        if ($page < 1) {
+            $page = 1;
+        }
+        if ($page >= $this->pageCount) {
+            $page = $this->pageCount;
+        }
+        $this->pagePrev = $this->pageNext = $this->pageNow = $page;
+        if ($this->hasMore($page)) {
+            $this->pageNext = $page + 1;
+        }
+        if ($this->hasMore($page, 'prev')) {
+            $this->pagePrev = $page - 1;
+        }
+    }
 
-        if ($this->type == 'gif') {
-            $image = $this->image;
-            $canvas = new \Imagick();
+    /**
+     * 获取中间的页码
+     * @return [type] [description]
+     */
+    protected function getLinks()
+    {
+        $pageCount = $this->pageCount;
+        $pageNow = $this->pageNow;
+        $pageLink = '';
+        $side = 2;
+        $window = $side * 2;
+        $block = [
+            'first' => [],
+            'last' => [],
+            'slider' => []
+        ];
+        if ($this->pageCount < $window + 6) {
+            $block['first'] = $this->getPageRange(1, $this->pageCount);
+        } elseif ($this->pageNow <= $window) {
+            $block['first'] = $this->getPageRange(1, $window + 2);
+            $block['last'] = $this->getPageRange($this->pageCount - 1, $this->pageCount);
+        } elseif ($this->pageNow > ($this->pageCount - $window)) {
+            $block['first'] = $this->getPageRange(1, 2);
+            $block['last'] = $this->getPageRange($this->pageCount - ($window + 2), $this->pageCount);
+        } else {
+            $block['first'] = $this->getPageRange(1, 2);
+            $block['slider'] = $this->getPageRange($this->pageNow - $side, $this->pageNow + $side);
+            $block['last'] = $this->getPageRange($this->pageCount - 1, $this->pageCount);
+        }
+        if (is_array($block['first'])) {
+            $pageLink .= $this->getUrlLinks($block['first']);
+        }
+        if (is_array($block['slider']) && !empty($block['slider'])) {
+            $pageLink .= $this->getDots();
+            $pageLink .= $this->getUrlLinks($block['slider']);
+        }
+        if (is_array($block['last']) && !empty($block['last'])) {
+            $pageLink .= $this->getDots();
+            $pageLink .= $this->getUrlLinks($block['last']);
+        }
+        return $pageLink;
+    }
 
-            $images = $image->coalesceImages();
-            foreach ($images as $frame) {
-                $img = new \Imagick();
-                $img->readImageBlob($frame);
-                $img->cropImage($width, $height, $x, $y);
-
-                $canvas->addImage($img);
-                $canvas->setImageDelay($img->getImageDelay());
-                $canvas->setImagePage($width, $height, 0, 0);
+    /**
+     * 生成html链接
+     * @param  [type] $url [description]
+     * @return [type]      [description]
+     */
+    protected function getUrlLinks($url)
+    {
+        $pageLink = '';
+        foreach ($url as $k => $v) {
+            if ($k == $this->pageNow) {
+                $pageLink .= $this->getActivePageWrapper($k);
+            } else {
+                $pageLink .= $this->getAvailablePageWrapper($v, $k);
             }
-
-            $image->destroy();
-            $this->image = $canvas;
-        } else {
-            $this->image->cropImage($width, $height, $x, $y);
         }
+        return $pageLink;
     }
 
-    /*
-    * 更改图像大小
-    $fit: 适应大小方式
-    'force': 把图片强制变形成 $width X $height 大小
-    'scale': 按比例在安全框 $width X $height 内缩放图片, 输出缩放后图像大小 不完全等于 $width X $height
-    'scale_fill': 按比例在安全框 $width X $height 内缩放图片，安全框内没有像素的地方填充色, 使用此参数时可设置背景填充色 $bg_color = array(255,255,255)(红,绿,蓝, 透明度) 透明度(0不透明-127完全透明))
-    其它: 智能模能 缩放图像并载取图像的中间部分 $width X $height 像素大小
-    $fit = 'force','scale','scale_fill' 时： 输出完整图像
-    $fit = 图像方位值 时, 输出指定位置部分图像
-    字母与图像的对应关系如下:
-
-    north_west   north   north_east
-
-    west         center        east
-
-    south_west   south   south_east
-
-    */
-    public function resize_to($width = 100, $height = 100, $fit = 'center', $fill_color = array(255, 255, 255, 0))
+    /**
+     * 获取分页的分段的范围
+     * @param  [type] $start [description]
+     * @param  [type] $end   [description]
+     * @return [type]        [description]
+     */
+    protected function getPageRange($start, $end)
     {
-
-        switch ($fit) {
-            case 'force':
-                if ($this->type == 'gif') {
-                    $image = $this->image;
-                    $canvas = new \Imagick();
-
-                    $images = $image->coalesceImages();
-                    foreach ($images as $frame) {
-                        $img = new \Imagick();
-                        $img->readImageBlob($frame);
-                        $img->thumbnailImage($width, $height, false);
-
-                        $canvas->addImage($img);
-                        $canvas->setImageDelay($img->getImageDelay());
-                    }
-                    $image->destroy();
-                    $this->image = $canvas;
-                } else {
-                    $this->image->thumbnailImage($width, $height, false);
-                }
-                break;
-            case 'scale':
-                if ($this->type == 'gif') {
-                    $image = $this->image;
-                    $images = $image->coalesceImages();
-                    $canvas = new \Imagick();
-                    foreach ($images as $frame) {
-                        $img = new \Imagick();
-                        $img->readImageBlob($frame);
-                        $img->thumbnailImage($width, $height, true);
-
-                        $canvas->addImage($img);
-                        $canvas->setImageDelay($img->getImageDelay());
-                    }
-                    $image->destroy();
-                    $this->image = $canvas;
-                } else {
-                    $this->image->thumbnailImage($width, $height, true);
-                }
-                break;
-            case 'scale_fill':
-                $size = $this->image->getImagePage();
-                $src_width = $size['width'];
-                $src_height = $size['height'];
-
-                $x = 0;
-                $y = 0;
-
-                $dst_width = $width;
-                $dst_height = $height;
-
-                if ($src_width * $height > $src_height * $width) {
-                    $dst_height = intval($width * $src_height / $src_width);
-                    $y = intval(($height - $dst_height) / 2);
-                } else {
-                    $dst_width = intval($height * $src_width / $src_height);
-                    $x = intval(($width - $dst_width) / 2);
-                }
-
-                $image = $this->image;
-                $canvas = new \Imagick();
-
-                $color = 'rgba(' . $fill_color[0] . ',' . $fill_color[1] . ',' . $fill_color[2] . ',' . $fill_color[3] . ')';
-                if ($this->type == 'gif') {
-                    $images = $image->coalesceImages();
-                    foreach ($images as $frame) {
-                        $frame->thumbnailImage($width, $height, true);
-
-                        $draw = new \ImagickDraw();
-                        $draw->composite($frame->getImageCompose(), $x, $y, $dst_width, $dst_height, $frame);
-
-                        $img = new \Imagick();
-                        $img->newImage($width, $height, $color, 'gif');
-                        $img->drawImage($draw);
-
-                        $canvas->addImage($img);
-                        $canvas->setImageDelay($img->getImageDelay());
-                        $canvas->setImagePage($width, $height, 0, 0);
-                    }
-                } else {
-                    $image->thumbnailImage($width, $height, true);
-
-                    $draw = new \ImagickDraw();
-                    $draw->composite($image->getImageCompose(), $x, $y, $dst_width, $dst_height, $image);
-
-                    $canvas->newImage($width, $height, $color, $this->get_type());
-                    $canvas->drawImage($draw);
-                    $canvas->setImagePage($width, $height, 0, 0);
-                }
-                $image->destroy();
-                $this->image = $canvas;
-                break;
-            default:
-                $size = $this->image->getImagePage();
-                $src_width = $size['width'];
-                $src_height = $size['height'];
-
-                $crop_x = 0;
-                $crop_y = 0;
-
-                $crop_w = $src_width;
-                $crop_h = $src_height;
-
-                if ($src_width * $height > $src_height * $width) {
-                    $crop_w = intval($src_height * $width / $height);
-                } else {
-                    $crop_h = intval($src_width * $height / $width);
-                }
-
-                switch ($fit) {
-                    case 'north_west':
-                        $crop_x = 0;
-                        $crop_y = 0;
-                        break;
-                    case 'north':
-                        $crop_x = intval(($src_width - $crop_w) / 2);
-                        $crop_y = 0;
-                        break;
-                    case 'north_east':
-                        $crop_x = $src_width - $crop_w;
-                        $crop_y = 0;
-                        break;
-                    case 'west':
-                        $crop_x = 0;
-                        $crop_y = intval(($src_height - $crop_h) / 2);
-                        break;
-                    case 'center':
-                        $crop_x = intval(($src_width - $crop_w) / 2);
-                        $crop_y = intval(($src_height - $crop_h) / 2);
-                        break;
-                    case 'east':
-                        $crop_x = $src_width - $crop_w;
-                        $crop_y = intval(($src_height - $crop_h) / 2);
-                        break;
-                    case 'south_west':
-                        $crop_x = 0;
-                        $crop_y = $src_height - $crop_h;
-                        break;
-                    case 'south':
-                        $crop_x = intval(($src_width - $crop_w) / 2);
-                        $crop_y = $src_height - $crop_h;
-                        break;
-                    case 'south_east':
-                        $crop_x = $src_width - $crop_w;
-                        $crop_y = $src_height - $crop_h;
-                        break;
-                    default:
-                        $crop_x = intval(($src_width - $crop_w) / 2);
-                        $crop_y = intval(($src_height - $crop_h) / 2);
-                }
-
-                $image = $this->image;
-                $canvas = new \Imagick();
-
-                if ($this->type == 'gif') {
-                    $images = $image->coalesceImages();
-                    foreach ($images as $frame) {
-                        $img = new \Imagick();
-                        $img->readImageBlob($frame);
-                        $img->cropImage($crop_w, $crop_h, $crop_x, $crop_y);
-                        $img->thumbnailImage($width, $height, true);
-
-                        $canvas->addImage($img);
-                        $canvas->setImageDelay($img->getImageDelay());
-                        $canvas->setImagePage($width, $height, 0, 0);
-                    }
-                } else {
-                    $image->cropImage($crop_w, $crop_h, $crop_x, $crop_y);
-                    $image->thumbnailImage($width, $height, true);
-                    $canvas->addImage($image);
-                    $canvas->setImagePage($width, $height, 0, 0);
-                }
-                $image->destroy();
-                $this->image = $canvas;
+        $urls = [];
+        for ($page = $start; $page <= $end; $page++) {
+            $urls[$page] = $this->url($page);
         }
-
+        return $urls;
     }
 
-
-    // 添加水印图片
-    public function add_watermark($path, $x = 0, $y = 0)
+    /**
+     * 获取分页后的数组
+     * @return [type] [description]
+     */
+    public function getItem()
     {
-        $watermark = new \Imagick($path);
-        $draw = new \ImagickDraw();
-        $draw->composite($watermark->getImageCompose(), $x, $y, $watermark->getImageWidth(), $watermark->getimageheight(), $watermark);
 
-        if ($this->type == 'gif') {
-            $image = $this->image;
-            $canvas = new \Imagick();
-            $images = $image->coalesceImages();
-            foreach ($image as $frame) {
-                $img = new \Imagick();
-                $img->readImageBlob($frame);
-                $img->drawImage($draw);
+        return array_slice($this->target, $this->offset(), $this->limit());
+    }
 
-                $canvas->addImage($img);
-                $canvas->setImageDelay($img->getImageDelay());
+    /**
+     * 渲染分页样式
+     * @return [type] [description]
+     */
+    public function render()
+    {
+        if ($this->options['simple']) {
+            return sprintf(
+                $this->getStyle() . '<ul class="hbb-pagination">%s  %s</ul>',
+                $this->getPrevPage(),
+                $this->getNextPage()
+            );
+        }
+        $page = $this->getStyle() . '<ul class="hbb-pagination">' . $this->getPrevPage() . $this->getLinks() . $this->getNextPage();
+        if ($this->options['allCounts']) {
+            $page .= $this->getAllCounts();
+        }
+        if ($this->options['nowAllPage']) {
+            $page .= $this->getNowAllPage();
+        }
+        if ($this->options['toPage']) {
+            $page .= $this->getToPage();
+        }
+        $page .= '</ul>';
+        return $page;
+    }
+
+    /**
+     * 获取总的页数
+     * @return [type] [description]
+     */
+    public function getPageCount()
+    {
+        $this->pageCount = ceil($this->totalCount / $this->defaultPageSize);
+        return $this->pageCount;
+    }
+
+    /**
+     * 生成上一页的按钮
+     * @param string $mark [description]
+     * @return [type]       [description]
+     */
+    protected function getPrevPage()
+    {
+        $mark = $this->options['prev_mark'];
+        //如果是第一页则不可点击
+        if ($this->pageNow == 1) {
+            if (!$this->options['simple']) {
+                return '';
             }
-            $image->destroy();
-            $this->image = $canvas;
-        } else {
-            $this->image->drawImage($draw);
+            return $this->getDisabledTextWrapper($mark);
         }
+        $url = $this->url($this->pagePrev);
+        return $this->getAvailablePageWrapper($url, $mark);
     }
 
-
-    // 添加水印文字
-    public function add_text($text, $x = 0, $y = 0, $angle = 0, $style = array())
+    /**
+     * 生成下一页的按钮
+     * @param string $mark [description]
+     * @return [type]       [description]
+     */
+    protected function getNextPage()
     {
-        $draw = new \ImagickDraw();
-        if (isset($style['font'])) $draw->setFont($style['font']);
-        if (isset($style['font_size'])) $draw->setFontSize($style['font_size']);
-        if (isset($style['fill_color'])) $draw->setFillColor($style['fill_color']);
-        if (isset($style['under_color'])) $draw->setTextUnderColor($style['under_color']);
-
-        if ($this->type == 'gif') {
-            foreach ($this->image as $frame) {
-                $frame->annotateImage($draw, $x, $y, $angle, $text);
+        $mark = $this->options['next_mark'];
+        //如果是第一页则不可点击
+        if ($this->pageNow == $this->pageNext) {
+            if (!$this->options['simple']) {
+                return '';
             }
+            return $this->getDisabledTextWrapper($mark);
+        }
+        $url = $this->url($this->pageNext);
+        return $this->getAvailablePageWrapper($url, $mark);
+    }
+
+    /**
+     * [生成可点击按钮]
+     * @param  [type] $url  [description]
+     * @param  [type] $page [description]
+     * @return [type]       [description]
+     */
+    protected function getAvailablePageWrapper($url, $page)
+    {
+        return '<li><a href="' . htmlentities($url) . '">' . $page . '</a></li>';
+    }
+
+    /**
+     * 生成禁用按钮
+     * @param  [type] $text [description]
+     * @return [type]       [description]
+     */
+    protected function getDisabledTextWrapper($text)
+    {
+        return '<li class="disabled"><span>' . $text . '</span></li>';
+    }
+
+    /**
+     * 生成一个激活的按钮
+     * @param string $text
+     * @return string
+     */
+    protected function getActivePageWrapper($text)
+    {
+        return '<li class="active"><span>' . $text . '</span></li>';
+    }
+
+    /**
+     * 生成省略号
+     * @return [type] [description]
+     */
+    protected function getDots()
+    {
+        return $this->getDisabledTextWrapper('...');
+    }
+
+    /**
+     * 得到总的条数
+     * @return [type] [description]
+     */
+    protected function getAllCounts()
+    {
+        return '<span class="page-total">共' . $this->totalCount . '条</span>';
+    }
+
+    /**
+     * 得到当前的页码跟总页码
+     * @return [type] [description]
+     */
+    protected function getNowAllPage()
+    {
+        return '<span class="page-all">第' . $this->pageNow . '页/共' . $this->pageCount . '页</span>';
+    }
+
+    protected function getToPage()
+    {
+        return '<span class="hbb-page">到第<input  value="' . $this->pageNow . '" id="to-page-input" class="" type="text">页<button type="button" class="hbb-button hbb-to-page" id="hbb-button">确定</button></span>
+             <script>
+                button = document.getElementById(`hbb-button`)
+                button.onclick = function(){
+                page = document.getElementById(`to-page-input`).value
+                baseUrl = "' . $this->getBaseUrl() . '";
+                query = ' . json_encode($this->getParams($this->pageNow)) . ';
+                query["page"] = page
+                params = ""
+                k = 0
+                for(i in query){
+                    if(k == 0){
+                        params += "?"+i+"="+query[i];
+                    }else{
+                        params += "&"+i+"="+query[i];
+                    }
+                    k++
+                }
+                url = baseUrl + params
+                window.location.href = url
+            }
+             </script>
+     
+         ';
+    }
+
+    /**
+     * 获取当前的url
+     */
+    protected function getUrl()
+    {
+        $uri = $this->request->getUri();
+        return $uri->getScheme() . '://' . $uri->getHost() . $uri->getPath() . !empty($uri->getQuery) ?? "?" . $uri->getQuery;
+    }
+
+    /**
+     * 获取baseUrl
+     */
+    protected function getBaseUrl()
+    {
+        $uri = $this->request->getUri();
+        return $uri->getScheme() . '://' . $uri->getHost() . $uri->getPath();
+    }
+
+    /**
+     * 获取params
+     */
+    protected function getParams($page = 1)
+    {
+
+        $getUrl = $this->getUrl();
+        $parse = parse_url($getUrl);
+        $query = [];
+        //获取参数
+        if (isset($parse['query'])) {
+            parse_str($parse['query'], $query);
+        }
+        //替换page参数
+        $query['page'] = $page;
+        return $query;
+    }
+
+    /**
+     * 生成url
+     * @param  [type] $page [description]
+     * @return [type]       [description]
+     */
+    protected function url($page)
+    {
+        if ($page < 1) {
+            $page = 1;
+        }
+        //获取url
+        $baseUrl = $this->getBaseUrl();
+        $param = http_build_query($this->getParams($page));
+        //生成url
+        $url = $baseUrl . '?' . $param;
+
+        return $url;
+
+    }
+
+    protected function getStyle()
+    {
+        $style = $this->options['style'];
+        $css = file_get_contents(alias('@base') . "/resource/static/css/page/style{$style}.css");
+        return "<style>{$css}</style>";
+    }
+
+    /**
+     * 判断是否有页面
+     * @param  [type]  $page [description]
+     * @param string $type [description]
+     * @return boolean       [description]
+     */
+    protected function hasMore($page, $type = "next")
+    {
+        if ($type == 'next') {
+            return $page < $this->pageCount;
         } else {
-            $this->image->annotateImage($draw, $x, $y, $angle, $text);
+            return $page > 1;
         }
     }
 
-
-    // 保存到指定路径
-    public function save_to($path)
+    /**
+     * 获取偏移量
+     * @return [type] [description]
+     */
+    public function offset()
     {
-        if ($this->type == 'gif') {
-            $this->image->writeImages($path, true);
-        } else {
-            $this->image->writeImage($path);
-        }
+        $page = $this->pageNow;
+        return ($page - 1) * $this->defaultPageSize;
     }
 
-    // 输出图像
-    public function output($header = true)
+    /**
+     * 获取分类页的数目
+     * @return [type] [description]
+     */
+    public function limit()
     {
-        if ($header) header('Content-type: ' . $this->type);
-        echo $this->image->getImagesBlob();
+        return $this->defaultPageSize;
     }
-
-
-    public function get_width()
-    {
-        $size = $this->image->getImagePage();
-        return $size['width'];
-    }
-
-    public function get_height()
-    {
-        $size = $this->image->getImagePage();
-        return $size['height'];
-    }
-
-    // 设置图像类型， 默认与源类型一致
-    public function set_type($type = 'png')
-    {
-        $this->type = $type;
-        $this->image->setImageFormat($type);
-    }
-
-    // 获取源图像类型
-    public function get_type()
-    {
-        return $this->type;
-    }
-
-
-    // 当前对象是否为图片
-    public function is_image()
-    {
-        if ($this->image)
-            return true;
-        else
-            return false;
-    }
-
-
-    public function thumbnail($width = 100, $height = 100, $fit = true)
-    {
-        $this->image->thumbnailImage($width, $height, $fit);
-    } // 生成缩略图 $fit为真时将保持比例并在安全框 $width X $height 内生成缩略图片
-
-    /*
-    添加一个边框
-    $width: 左右边框宽度
-    $height: 上下边框宽度
-    $color: 颜色: RGB 颜色 'rgb(255,0,0)' 或 16进制颜色 '#FF0000' 或颜色单词 'white'/'red'...
-    */
-    public function border($width, $height, $color = 'rgb(220, 220, 220)')
-    {
-        $color = new \ImagickPixel();
-        $color->setColor($color);
-        $this->image->borderImage($color, $width, $height);
-    }
-
-    public function blur($radius, $sigma)
-    {
-        $this->image->blurImage($radius, $sigma);
-    } // 模糊
-
-    public function gaussian_blur($radius, $sigma)
-    {
-        $this->image->gaussianBlurImage($radius, $sigma);
-    } // 高斯模糊
-
-    public function motion_blur($radius, $sigma, $angle)
-    {
-        $this->image->motionBlurImage($radius, $sigma, $angle);
-    } // 运动模糊
-
-    public function radial_blur($radius)
-    {
-        $this->image->radialBlurImage($radius);
-    } // 径向模糊
-
-    public function add_noise($type = null)
-    {
-        $this->image->addNoiseImage($type == null ? imagick::NOISE_IMPULSE : $type);
-    } // 添加噪点
-
-    public function level($black_point, $gamma, $white_point)
-    {
-        $this->image->levelImage($black_point, $gamma, $white_point);
-    } // 调整色阶
-
-    public function modulate($brightness, $saturation, $hue)
-    {
-        $this->image->modulateImage($brightness, $saturation, $hue);
-    } // 调整亮度、饱和度、色调
-
-    public function charcoal($radius, $sigma)
-    {
-        $this->image->charcoalImage($radius, $sigma);
-    } // 素描
-
-    public function oil_paint($radius)
-    {
-        $this->image->oilPaintImage($radius);
-    } // 油画效果
-
-    public function flop()
-    {
-        $this->image->flopImage();
-    } // 水平翻转
-
-    public function flip()
-    {
-        $this->image->flipImage();
-    } // 垂直翻转
-
 }
