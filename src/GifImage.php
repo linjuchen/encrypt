@@ -256,23 +256,51 @@ class GifImage
     }
 
 
-    // 添加水印图片
+    // 添加水印图片path
     public function add_watermark($path, $x = 0, $y = 0)
     {
         $watermark = new \Imagick($path);
-        $draw = new \ImagickDraw();
-        $draw->composite($watermark->getImageCompose(), $x, $y, $watermark->getImageWidth(), $watermark->getimageheight(), $watermark);
-
+        $image = $this->image;
         if ($this->type == 'gif') {
-            $image = $this->image;
+            $draw = new \ImagickDraw();
+            $draw->composite($watermark->getImageCompose(), $x, $y, $watermark->getImageWidth(), $watermark->getimageheight(), $watermark);
+            $canvas = new \Imagick();
+            $images = $image->coalesceImages();
+            foreach ($image as $frame) {
+                //$frame->thumbnailImage(50, 50);//所率图
+                $img = new \Imagick();
+                $img->readImageBlob($frame);
+                $img->drawImage($draw);
+                $canvas->addImage($img);
+                $canvas->setImageDelay($img->getImageDelay());
+            }
+
+            $image->destroy();
+            $this->image = $canvas;
+        } else {
+            $this->image->drawImage($draw);
+        }
+    }
+
+    //给patht图片加水印
+    public function add_watermark2($path)
+    {
+        $watermark = new \Imagick($path);
+        $image = $this->image;
+        if ($this->type == 'gif') {
             $canvas = new \Imagick();
             $images = $image->coalesceImages();
             foreach ($image as $frame) {
                 $img = new \Imagick();
                 $img->readImageBlob($frame);
-                $img->drawImage($draw);
 
-                $canvas->addImage($img);
+                $image_page = $frame->getImagePage();
+                print_r($image_page);
+                $draw = new \ImagickDraw();
+                echo $img->getImageWidth() . "  ==>" . $img->getimageheight() . "\n";
+                $draw->composite($img->getImageCompose(), $image_page['x'], $image_page['y'], $img->getImageWidth(), $img->getimageheight(), $img);
+                $watermark->drawImage($draw);
+                $canvas->addImage($watermark);
                 $canvas->setImageDelay($img->getImageDelay());
             }
             $image->destroy();
