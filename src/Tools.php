@@ -8,7 +8,7 @@ class Tools
     private $key;
     private $iv;
 
-    public function __construct($key, $iv)
+    public function __construct($key = '', $iv = '')
     {
         $this->key = $key;
         $this->iv = $iv;
@@ -286,4 +286,27 @@ class Tools
         return $filePath . $id . ".png";
     }
 
+    public function mp3Url(int $id): string
+    {
+        $filePath = "/mp3/" . sprintf("%03d", $id / 999) . "/" . sprintf("%03d", $id / 666) . "/" . sprintf("%03d", $id / 333) . "/";
+        return $filePath . $id . ".mp3";
+    }
+
+    public function idE(int $id): string
+    {
+        $hash = md5($id . "XJQ");
+        $mod = $id % 10 === 0 ? 1 : $id % 10;
+        return substr($hash, 0, $mod) . $id . $mod;
+    }
+
+    public function idD(string $str): int
+    {
+        $mod = (int)substr($str, -1);
+        $id = (int)substr(str, $mod, strlen($str) - $mod - 1);
+        $hash = md5($id . "XJQ");
+        if (substr($hash, 0, $mod) !== substr($str, 0, $mod)) {
+            $id = 0;
+        }
+        return $id;
+    }
 }
