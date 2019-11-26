@@ -17,12 +17,12 @@ class Tools
     public function encode($text)
     {
         $encrypted = openssl_encrypt($text, 'aes-256-cbc', base64_decode($this->key), OPENSSL_RAW_DATA, base64_decode($this->iv));
-        return array(base64_encode($encrypted), md5($this->iv . "+_+" . $text));
+        return array(urlencode(base64_encode($encrypted)), md5($this->iv . "+_+" . $text));
     }
 
     public function decode($text, $hash)
     {
-        $text = openssl_decrypt(base64_decode($text), 'aes-256-cbc', base64_decode($this->key), OPENSSL_RAW_DATA, base64_decode($this->iv));
+        $text = openssl_decrypt(base64_decode(urldecode($text)), 'aes-256-cbc', base64_decode($this->key), OPENSSL_RAW_DATA, base64_decode($this->iv));
         if (md5($this->iv . "+_+" . $text) !== $hash) {
             return 0;
         }
@@ -32,46 +32,43 @@ class Tools
     public function qUrl($subjectId, $questionId)
     {//题目编号加密
         $questionIdStr = sprintf("%010d", $questionId);
-        return $this->getUriBySubjectId($subjectId) . "q/" . substr($questionIdStr, 0, 5) . md5($this->key . "_" . $this->iv . "s_" . $subjectId . "_" . $questionId . "_" . $questionIdStr) . substr($questionIdStr, -5) . ".html";
+        return "/q/" . $this->getUriBySubjectId($subjectId) . substr($questionIdStr, 0, 5) . "/" . md5($subjectId . "_" . $questionId . "p_p" . $subjectId . "_" . $questionId . "_" . $questionIdStr) . substr($questionIdStr, -5) . ".html";
     }
 
-    public function sUrl($subjectId, $shijuanId)
+    public function pUrl($subjectId, $shijuanId)
     {//试卷编号加密
         $shijuanIdStr = sprintf("%010d", $shijuanId);
-        return $this->getUriBySubjectId($subjectId) . "s/" . substr($shijuanIdStr, 0, 5) . md5($this->key . "_" . $this->iv . "q_" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, -5) . ".html";
+        return "/p/" . $this->getUriBySubjectId($subjectId) . substr($shijuanIdStr, 0, 5) . "/" . md5($subjectId . "_" . $shijuanId . "q_q" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, -5) . ".html";
     }
 
-    public function qId($uri)
+    public function anyQorP(string $uri, string $type): int
+    {
+        $uri = explode("/", $uri);
+        if (count($uri) === 6 && empty($uri[0]) && $uri[1] === $type) {
+            $subjectId = $this->getSubjectIdByUri("/" . $uri[2] . "/" . $uri[3] . "/");
+            if (is_int($subjectId)) {
+                $strArr = explode(".", $uri[5]);
+                $str = $strArr[0];//去掉.html
+                $id = (int)($uri[4] . substr($str, -5));
+                if (md5($subjectId . "_" . $id . $type . "_" . $type . $subjectId . "_" . $id . "_" . $uri[4] . substr($str, -5)) === substr($str, 5, 32)) {
+                    return $id;
+                }
+            }
+            return 0;
+        }
+    }
+
+    public function qId($uri): int
     {//获取试题id
-        $uri = explode("/q/", $uri);
-        $subjectId = $this->getSubjectIdByUri($uri[0] . "/");
-        if (is_int($subjectId)) {
-            $questionStr = explode(".", $uri[1]);
-            $questionStr = $questionStr[0];
-            $questionId = (int)(substr($questionStr, 0, 5) . substr($questionStr, -5));
-            if (md5($this->key . "_" . $this->iv . "s_" . $subjectId . "_" . $questionId . "_" . substr($questionStr, 0, 5) . substr($questionStr, -5)) === substr($questionStr, 5, 32)) {
-                return $questionId;
-            }
-        }
-        return -1;
+        return $this->anyQorP($uri, "q");
     }
 
-    public function sId($uri)
+    public function pId($uri): int
     {//获取试卷id
-        $uri = explode("/s/", $uri);
-        $subjectId = $this->getSubjectIdByUri($uri[0] . "/");
-        if (is_int($subjectId)) {
-            $shijuanStr = explode(".", $uri[1]);
-            $shijuanStr = $shijuanStr[0];
-            $shijuanId = (int)(substr($shijuanStr, 0, 5) . substr($shijuanStr, -5));
-            if (md5($this->key . "_" . $this->iv . "q_" . $subjectId . "_" . $shijuanId . "_" . substr($shijuanStr, 0, 5) . substr($shijuanStr, -5)) === substr($shijuanStr, 5, 32)) {
-                return $shijuanId;
-            }
-        }
-        return -1;
+        return $this->anyQorP($uri, "p");
     }
 
-    public function getUriBySubjectId($subjectId)
+    public function getUriBySubjectId($subjectId): string
     {
         switch ($subjectId) {
             case 1:
@@ -162,12 +159,12 @@ class Tools
                 $uri = "/xiaoxue/aoshu/";
                 break;//小学奥数
             default :
-                $uri = -1;
+                $uri = "";
         }
         return $uri;
     }
 
-    public function getSubjectIdByUri($uri)
+    public function getSubjectIdByUri($uri): int
     {
         switch ($uri) {
             case "/xiaoxue/yuwen/":
@@ -263,12 +260,14 @@ class Tools
         return $subjectId;
     }
 
-    public function forceDirectory($dir)
+    public
+    function forceDirectory($dir)
     {//创建目录
         return is_dir($dir) or (self::forceDirectory(dirname($dir)) and mkdir($dir, 0777));
     }
 
-    protected function getIdFromString($str)
+    protected
+    function getIdFromString($str)
     {
         $id = "";
         $str = substr($str, -10);
@@ -280,29 +279,33 @@ class Tools
         return $id;
     }
 
-    public function picUrl(int $id): string
+    public
+    function picUrl(int $id): string
     {
         $filePath = "/img/" . sprintf("%03d", $id / 999) . "/" . sprintf("%03d", $id / 666) . "/" . sprintf("%03d", $id / 333) . "/";
         return $filePath . $id . ".png";
     }
 
-    public function mp3Url(int $id): string
+    public
+    function mp3Url(int $id): string
     {
         $filePath = "/mp3/" . sprintf("%03d", $id / 999) . "/" . sprintf("%03d", $id / 666) . "/" . sprintf("%03d", $id / 333) . "/";
         return $filePath . $id . ".mp3";
     }
 
-    public function idE(int $id): string
+    public
+    function idE(int $id): string
     {
         $hash = md5($id . "XJQ");
         $mod = $id % 10 === 0 ? 1 : $id % 10;
         return substr($hash, 0, $mod) . $id . $mod;
     }
 
-    public function idD(string $str): int
+    public
+    function idD(string $str): int
     {
         $mod = (int)substr($str, -1);
-        $id = (int)substr(str, $mod, strlen($str) - $mod - 1);
+        $id = (int)substr($str, $mod, strlen($str) - $mod - 1);
         $hash = md5($id . "XJQ");
         if (substr($hash, 0, $mod) !== substr($str, 0, $mod)) {
             $id = 0;
