@@ -32,13 +32,19 @@ class Tools
     public function qUrl($subjectId, $questionId)
     {//题目编号加密
         $questionIdStr = sprintf("%010d", $questionId);
-        return "/q" . $this->getUriBySubjectId($subjectId) . substr($questionIdStr, 0, 5) . "/" . md5($subjectId . "_" . $questionId . "p_p" . $subjectId . "_" . $questionId . "_" . $questionIdStr) . substr($questionIdStr, -5) . ".html";
+        return "/q" . $this->getUriBySubjectId($subjectId) . substr($questionIdStr, 0, 5) . "/" . md5($subjectId . "_" . $questionId . "q_q" . $subjectId . "_" . $questionId . "_" . $questionIdStr) . substr($questionIdStr, -5) . ".html";
     }
 
     public function pUrl($subjectId, $shijuanId)
     {//试卷编号加密
         $shijuanIdStr = sprintf("%010d", $shijuanId);
-        return "/p" . $this->getUriBySubjectId($subjectId) . substr($shijuanIdStr, 0, 5) . "/" . md5($subjectId . "_" . $shijuanId . "q_q" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, -5) . ".html";
+        return "/p" . $this->getUriBySubjectId($subjectId) . substr($shijuanIdStr, 0, 5) . "/" . md5($subjectId . "_" . $shijuanId . "p_p" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, -5) . ".html";
+    }
+
+    public function cpUrl($subjectId, $shijuanId)
+    {//组卷试卷编号加密
+        $shijuanIdStr = sprintf("%010d", $shijuanId);
+        return "/cp" . $this->getUriBySubjectId($subjectId) . substr($shijuanIdStr, 0, 5) . "/" . md5($subjectId . "_" . $shijuanId . "cp_cp" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, -5) . ".html";
     }
 
     public function anyQorP(string $uri, string $type): int
@@ -66,6 +72,11 @@ class Tools
     public function pId($uri): int
     {//获取试卷id
         return $this->anyQorP($uri, "p");
+    }
+
+    public function cpId($uri): int
+    {//组卷获取试卷id
+        return $this->anyQorP($uri, "cp");
     }
 
     public function getUriBySubjectId($subjectId): string
