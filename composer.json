@@ -6,11 +6,24 @@
     "license": "Apache-2.0",
     "authors": [{"name": "linbaoling", "email": "32026804@qq.com"}],
     "require": {
-        "php": "^7.1"
+        "php": "^7.1",
+		"ext-json": "*",
+        "ext-curl": "*",
+        "ext-libxml": "*",
+        "ext-openssl": "*",
+        "ext-mbstring": "*",
+        "ext-simplexml": "*"
     },
     "autoload": {
+		"classmap": [
+			"We.php"
+		],
         "psr-4": {
             "Cmmia\\Encrypt\\": "src/"
+			"WePay\\": "src/pay/WePay",
+		    "WeMini\\": "src/pay/WeMini",
+		    "WeChat\\": "src/pay/WeChat",
+		    "AliPay\\": "src/pay/AliPay"
         }
     }
 }
