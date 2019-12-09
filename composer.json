@@ -26,14 +26,14 @@
   },
   "autoload": {
     "classmap": [
-      "We.php"
+      "src/pay/We.php"
     ],
     "psr-4": {
       "Cmmia\\Encrypt\\": "src/",
-      "WePay\\": "src/pay/WePay",
-      "WeMini\\": "src/pay/WeMini",
-      "WeChat\\": "src/pay/WeChat",
-      "AliPay\\": "src/pay/AliPay"
+      "WePay\\": "src/pay/WePay/",
+      "WeMini\\": "src/pay/WeMini/",
+      "WeChat\\": "src/pay/WeChat/",
+      "AliPay\\": "src/pay/AliPay/"
     }
   }
 }
