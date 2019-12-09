@@ -11,7 +11,7 @@ class IdNum
       # 更新时间：Fri Mar 28 09:50:19 CST 2008
       / */
 
-    function idcard_verify_number($idcard_base)
+    public function idcard_verify_number($idcard_base)
     {
         if (strlen($idcard_base) != 17) {
             return false;
@@ -35,7 +35,7 @@ class IdNum
       # 更新时间：Fri Mar 28 09:49:13 CST 2008
       / */
 
-    function idcard_15to18($idcard)
+    public function idcard_15to18($idcard)
     {
         if (strlen($idcard) != 15) {
             return false;
@@ -46,7 +46,7 @@ class IdNum
                 $idcard = substr($idcard, 0, 6) . '19' . substr($idcard, 6, 9);
             }
         }
-        $idcard = $idcard . idcard_verify_number($idcard);
+        $idcard = $idcard . $this->idcard_verify_number($idcard);
         return $idcard;
     }
 
@@ -58,13 +58,13 @@ class IdNum
       # 更新时间：Fri Mar 28 09:48:36 CST 2008
       / */
 
-    function idcard_checksum18($idcard)
+    public function idcard_checksum18($idcard)
     {
         if (strlen($idcard) != 18) {
             return false;
         }
         $idcard_base = substr($idcard, 0, 17);
-        if (idcard_verify_number($idcard_base) != strtoupper(substr($idcard, 17, 1))) {
+        if ($this->idcard_verify_number($idcard_base) != strtoupper(substr($idcard, 17, 1))) {
             return false;
         } else {
             return true;
@@ -79,13 +79,13 @@ class IdNum
       # 更新时间：Fri Mar 28 09:47:43 CST 2008
       / */
 
-    function check_id($idcard)
+    public function check_id($idcard)
     {
         if (strlen($idcard) == 15 || strlen($idcard) == 18) {
             if (strlen($idcard) == 15) {
-                $idcard = idcard_15to18($idcard);
+                $idcard = $this->idcard_15to18($idcard);
             }
-            if (idcard_checksum18($idcard)) {
+            if ($this->idcard_checksum18($idcard)) {
                 return true;
             } else {
                 return false;
