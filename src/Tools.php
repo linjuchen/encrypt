@@ -56,7 +56,7 @@ class Tools
                 $strArr = explode(".", $uri[5]);
                 $str = $strArr[0];//去掉.html
                 $id = (int)($uri[4] . substr($str, -5));
-                if (md5($subjectId . "_" . $id . $type . "_" . $type . $subjectId . "_" . $id . "_" . $uri[4] . substr($str, -5)) === substr($str, 5, 32)) {
+                if (md5($subjectId . "_" . $id . $type . "_" . $type . $subjectId . "_" . $id . "_" . $uri[4] . substr($str, -5)) === substr($str, 0, 32)) {
                     return $id;
                 }
             }
