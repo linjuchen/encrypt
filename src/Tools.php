@@ -60,8 +60,8 @@ class Tools
                     return $id;
                 }
             }
-            return 0;
         }
+        return 0;
     }
 
     public function qId($uri): int
