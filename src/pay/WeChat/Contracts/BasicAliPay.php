@@ -123,6 +123,19 @@ abstract class BasicAliPay
     }
 
     /**
+     * 退款查询
+     * @param $options
+     * @return array|bool
+     * @throws InvalidResponseException
+     * @throws \WeChat\Exceptions\LocalCacheException
+     */
+    public function refundQuery($options)
+    {
+        $this->options->set('method', 'alipay.trade.fastpay.refund.query');
+        return $this->getResult($options);
+    }
+
+    /**
      * 关闭支付宝进行中的订单
      * @param array|string $options
      * @return array|boolean
