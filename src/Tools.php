@@ -29,6 +29,18 @@ class Tools
         return $text;
     }
 
+    public function kpUrl(int $subjectId, int $kpId)
+    {//知识点对应的url
+        $kpIdStr = sprintf("%010d", $kpId);
+        return "/k" . $this->getUriBySubjectId($subjectId) . substr($kpIdStr, 0, 5) . "/" . md5($subjectId . "_" . $kpId . "k_k" . $subjectId . "_" . $kpId . "_" . $kpIdStr) . substr($kpIdStr, -5) . ".html";
+    }
+
+    public function cUrl(int $subjectId, int $cId)
+    {//章节对应的url
+        $cIdStr = sprintf("%010d", $cId);
+        return "/c" . $this->getUriBySubjectId($subjectId) . substr($cIdStr, 0, 5) . "/" . md5($subjectId . "_" . $cId . "c_c" . $subjectId . "_" . $kpId . "_" . $cIdStr) . substr($cIdStr, -5) . ".html";
+    }
+
     public function qUrl($subjectId, $questionId)
     {//题目编号加密
         $questionIdStr = sprintf("%010d", $questionId);
