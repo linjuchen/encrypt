@@ -38,7 +38,7 @@ class Tools
     public function cUrl(int $subjectId, int $cId)
     {//章节对应的url
         $cIdStr = sprintf("%010d", $cId);
-        return "/c" . $this->getUriBySubjectId($subjectId) . substr($cIdStr, 0, 5) . "/" . md5($subjectId . "_" . $cId . "c_c" . $subjectId . "_" . $kpId . "_" . $cIdStr) . substr($cIdStr, -5) . ".html";
+        return "/c" . $this->getUriBySubjectId($subjectId) . substr($cIdStr, 0, 5) . "/" . md5($subjectId . "_" . $cId . "c_c" . $subjectId . "_" . $cId . "_" . $cIdStr) . substr($cIdStr, -5) . ".html";
     }
 
     public function qUrl($subjectId, $questionId)
