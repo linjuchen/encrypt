@@ -20,6 +20,15 @@ class Tools
         return array(urlencode(base64_encode($encrypted)), md5($this->iv . "+_+" . $text));
     }
 
+    public function newQBody(string $body, int $qNum): string
+    {
+        $body = str_replace("【题文】", "", $body);
+        for ($i = 1; $i <= $qNum; $i++) {
+            $body = str_replace(array("【小题" . $i . "】"), array("[[QOrDeR]]"), $body);
+        }
+        return $body;
+    }
+
     public function decode($text, $hash)
     {
         $text = openssl_decrypt(base64_decode(urldecode($text)), 'aes-256-cbc', base64_decode($this->key), OPENSSL_RAW_DATA, base64_decode($this->iv));
