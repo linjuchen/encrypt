@@ -13,7 +13,18 @@ class Tools
         $this->key = $key;
         $this->iv = $iv;
     }
-
+    public function highlight_html(string $str,string $keyWord):string
+    {
+        $kw=[];
+        for($i=0;$i<mb_strlen($keyWord);$i++){
+            $kw[]=mb_substr($keyWord,$i,1);
+        }
+        $keyWord=implode("|",$kw);
+        return preg_replace_callback('#((?:(?!<[/a-z]).)*)([^>]*>|$)#si', function($m) use ($keyWord) {
+                    return preg_replace('~('.$keyWord.')~i', '<span style="background:#fff330">$1</span>', $m[1]) . $m[2];
+                },
+                $str);
+    }
     public function encode($text)
     {
         $encrypted = openssl_encrypt($text, 'aes-256-cbc', base64_decode($this->key), OPENSSL_RAW_DATA, base64_decode($this->iv));
@@ -59,13 +70,13 @@ class Tools
     public function pUrl($subjectId, $shijuanId)
     {//试卷编号加密
         $shijuanIdStr = sprintf("%010d", $shijuanId);
-        return "/p" . $this->getUriBySubjectId($subjectId) . substr($shijuanIdStr, 0, 5) . "/" . md5($subjectId . "_" . $shijuanId . "p_p" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, -5) . ".html";
+        return "/p/" . $this->getUriBySubjectId($subjectId) . substr($shijuanIdStr, 0, 5) . "/" . md5($subjectId . "_" . $shijuanId . "p_p" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, -5) . ".html";
     }
 
     public function cpUrl($subjectId, $shijuanId)
     {//组卷试卷编号加密
         $shijuanIdStr = sprintf("%010d", $shijuanId);
-        return "/cp" . $this->getUriBySubjectId($subjectId) . substr($shijuanIdStr, 0, 5) . "/" . md5($subjectId . "_" . $shijuanId . "cp_cp" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, -5) . ".html";
+        return "/p/" . $this->getUriBySubjectId($subjectId) . substr($shijuanIdStr, 0, 5) . "/" . md5($subjectId . "_" . $shijuanId . "cp_cp" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, -5) . ".html";
     }
 
     public function anyQorP(string $uri, string $type): int
