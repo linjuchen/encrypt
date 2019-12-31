@@ -367,11 +367,18 @@ class Tools
     }
 
     /**
-     * 汉字笔画笔顺
+     * 汉字笔画笔顺动图
      */
     public function getHanZiBiHShun(int $id):string
     {
-        $filePath = "/img/" . substr(md5(sprintf("%03d", $id / 999)),0,3) . "/" . substr(md5(sprintf("%03d", $id / 666)),5,5) . "/" . md5(sprintf("%03d", $id / 333)) . "/";
-        return $filePath . $id . ".gif"; 
+        return "/bishun/" . sprintf("%03d", $id / 999) . "/" . sprintf("%03d", $id / 666) . "/" . sprintf("%03d", $id / 333) . "/". $id . ".gif"; 
+    }
+
+    /**
+     * 汉字笔画笔顺静态图
+     */
+    public function getHanZiBiHShunSvg(int $id):string
+    {
+        return "/bishun/" . sprintf("%03d", $id / 999) . "/" . sprintf("%03d", $id / 666) . "/" . sprintf("%03d", $id / 333) . "/". $id . ".svg"; 
     }
 }
