@@ -13,6 +13,16 @@ class Tools
         $this->key = $key;
         $this->iv = $iv;
     }
+    function str_replace_limit($search, $replace, $subject, $limit=-1){ 
+        if(is_array($search)){ 
+            foreach($search as $k=>$v){ 
+                $search[$k] = "`".preg_quote($search[$k], "`")."`"; 
+            } 
+        }else{ 
+            $search = "`".preg_quote($search, "`")."`"; 
+        } 
+        return preg_replace($search, $replace, $subject, $limit); 
+    } 
     public function highlight_html(string $str,string $keyWord):string
     {
         $kw=[];
@@ -354,5 +364,14 @@ class Tools
             $id = 0;
         }
         return $id;
+    }
+
+    /**
+     * 汉字笔画笔顺
+     */
+    public function getHanZiBiHShun(int $id):string
+    {
+        $filePath = "/img/" . substr(md5(sprintf("%03d", $id / 999)),0,3) . "/" . substr(md5(sprintf("%03d", $id / 666)),5,5) . "/" . md5(sprintf("%03d", $id / 333)) . "/";
+        return $filePath . $id . ".gif"; 
     }
 }
