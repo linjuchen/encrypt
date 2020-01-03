@@ -80,13 +80,13 @@ class Tools
     public function pUrl($subjectId, $shijuanId)
     {//试卷编号加密
         $shijuanIdStr = sprintf("%010d", $shijuanId);
-        return "/p/" . $this->getUriBySubjectId($subjectId) . substr($shijuanIdStr, 0, 5) . "/" . md5($subjectId . "_" . $shijuanId . "p_p" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, -5) . ".html";
+        return "/p" . $this->getUriBySubjectId($subjectId) . substr($shijuanIdStr, 0, 5) . "/" . md5($subjectId . "_" . $shijuanId . "p_p" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, -5) . ".html";
     }
 
     public function cpUrl($subjectId, $shijuanId)
     {//组卷试卷编号加密
         $shijuanIdStr = sprintf("%010d", $shijuanId);
-        return "/p/" . $this->getUriBySubjectId($subjectId) . substr($shijuanIdStr, 0, 5) . "/" . md5($subjectId . "_" . $shijuanId . "cp_cp" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, -5) . ".html";
+        return "/p" . $this->getUriBySubjectId($subjectId) . substr($shijuanIdStr, 0, 5) . "/" . md5($subjectId . "_" . $shijuanId . "cp_cp" . $subjectId . "_" . $shijuanId . "_" . $shijuanIdStr) . substr($shijuanIdStr, -5) . ".html";
     }
 
     public function anyQorP(string $uri, string $type): int
