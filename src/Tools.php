@@ -53,7 +53,8 @@ class Tools
         for ($i = 1; $i <= $qNum; ++$i) {
             $body = str_replace(['【小题'.$i.'】'], ['[[QOrDeR]]'], $body);
         }
-
+        $body = str_replace(['<font>'], ['<span class="dot">'], $body);
+        $body = str_replace(['</font>'], ['</span>'], $body);
         return $body;
     }
 
@@ -406,6 +407,6 @@ class Tools
     {
         $regex = "/\/|\～|\，|\。|\！|\？|\“|\”|\【|\】|\『|\』|\：|\；|\《|\》|\’|\‘|\ |\·|\~|\!|\@|\#|\\$|\%|\^|\&|\*|\(|\)|\_|\+|\{|\}|\:|\<|\>|\?|\[|\]|\,|\.|\/|\;|\'|\`|\-|\=|\\\|\|/";
 
-        return preg_replace($regex, '', $strParam);
+        return preg_replace($regex, ' ', $strParam);
     }
 }
