@@ -53,11 +53,16 @@ class Tools
         for ($i = 1; $i <= $qNum; ++$i) {
             $body = str_replace(['【小题'.$i.'】'], ['[[QOrDeR]]'], $body);
         }
-        $body = str_replace(['<font>'], ['<span class="dot">'], $body);
-        $body = str_replace(['</font>'], ['</span>'], $body);
-        return $body;
+        return $this->replaceBody($body);
     }
 
+    public function replaceBody(string $body):string
+    {
+        $body = str_replace(['<font>'], ['<span class="dot">'], $body);
+        $body = str_replace(['</font>'], ['</span>'], $body);
+        $body = str_replace(['[来源:学§科§网]','学-科网','来源:学.科.网Z.X.X.K','学科+网','[来源:学§科§网]','[来源:学科网ZXXK]','[来源:学科网]','[来源:学#科#网]','[来源:学+科+网]','[来源:学|科|网Z|X|X|K]','[来源:学|科|网]','[来源:学.科.网Z.X.X.K]','学！科网'], [''], $body); 
+        return $body;
+    }
     public function decode($text, $hash)
     {
         $text = openssl_decrypt(base64_decode(urldecode($text)), 'aes-256-cbc', base64_decode($this->key), OPENSSL_RAW_DATA, base64_decode($this->iv));
