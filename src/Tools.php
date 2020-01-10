@@ -58,6 +58,21 @@ class Tools
         return $this->replaceBody($body);
     }
 
+    public function singleQBody(string $body,int $qnum):string
+    {
+        if ($qnum > 1) {
+            $cfCount = substr_count($body, '[[QOrDeR]]');
+            $index = 1;
+            for ($i = 1; $i <= $cfCount; ++$i) {
+                $body = $this->str_replace_limit('[[QOrDeR]]', $index.'．', $body, 1);
+                if ($i < $cfCount) {
+                    ++$index;
+                }
+            }
+        }
+        return $body;
+    }
+
     public function replaceBody(string $body):string
     {
         $body = str_replace(['<font>'], ['<span class="dot">'], $body);
