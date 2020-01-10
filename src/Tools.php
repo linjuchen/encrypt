@@ -13,6 +13,7 @@ class Tools
         $this->iv = $iv;
     }
 
+    //迷惑信息  d-none
     public function str_replace_limit($search, $replace, $subject, $limit = -1)
     {
         if (is_array($search)) {
@@ -29,17 +30,26 @@ class Tools
     public function highlight_html(string $str, string $keyWord): string
     {
         $kw = [];
+        $word = '';
         for ($i = 0; $i < mb_strlen($keyWord); ++$i) {
-            if(mb_substr($keyWord, $i, 1)!=" "){
+            if (1 != strlen(mb_substr($keyWord, $i, 1))) {
                 $kw[] = mb_substr($keyWord, $i, 1);
-            }            
+                $word = '';
+            } elseif (' ' !== mb_substr($keyWord, $i, 1)) {
+                $word .= mb_substr($keyWord, $i, 1);
+                if($i==(mb_strlen($keyWord)-1)){
+                    $kw[] = $word;
+                }
+            } elseif (' ' === mb_substr($keyWord, $i, 1)) {
+                $kw[] = $word;
+                $word = '';
+            }
         }
         $keyWord = implode('|', $kw);
 
         return preg_replace_callback('#((?:(?!<[/a-z]).)*)([^>]*>|$)#si', function ($m) use ($keyWord) {
             return preg_replace('~('.$keyWord.')~i', '<span style="background:#fff330">$1</span>', $m[1]).$m[2];
-        },
-                $str);
+        }, $str);
     }
 
     public function encode($text)
@@ -55,10 +65,11 @@ class Tools
         for ($i = 1; $i <= $qNum; ++$i) {
             $body = str_replace(['【小题'.$i.'】'], ['[[QOrDeR]]'], $body);
         }
+
         return $this->replaceBody($body);
     }
 
-    public function singleQBody(string $body,int $qnum):string
+    public function singleQBody(string $body, int $qnum): string
     {
         if ($qnum > 1) {
             $cfCount = substr_count($body, '[[QOrDeR]]');
@@ -70,16 +81,19 @@ class Tools
                 }
             }
         }
+
         return $body;
     }
 
-    public function replaceBody(string $body):string
+    public function replaceBody(string $body): string
     {
         $body = str_replace(['<font>'], ['<span class="dot">'], $body);
         $body = str_replace(['</font>'], ['</span>'], $body);
-        $body = str_replace(['[来源:学§科§网]','学-科网','来源:学.科.网Z.X.X.K','学科+网','[来源:学§科§网]','[来源:学科网ZXXK]','[来源:学科网]','[来源:学#科#网]','[来源:学+科+网]','[来源:学|科|网Z|X|X|K]','[来源:学|科|网]','[来源:学.科.网Z.X.X.K]','学！科网'], [''], $body); 
+        $body = str_replace(['学科网', 'ZXXK', 'Zxxk', 'zxxk', 'ZXXK]', '【来源：学科网ZXXK】', '[来源:Zxxk.', '<u>来源:学科网ZXXK]</u>', '<sub>zxxk</sub><br>', '学科网ZXXK]', '[来源：学科网ZXXK]', '<i>来源:学科网ZXXK]</i>', '网ZXXK]', 'ZXXK]', '（来源：Zxxk．Com）', '[来源:Zxxk.Com]', '[来源:学+（&#160;&#160;&#160;）科+网Z+X+X+K]', '学科网[来源:Zxxk.Com]', '<br>学科网<br>', '<u>学科网</u>', '[来源:学+科+网Z+X+X+K]', '[来源:学。科。网Z。', '[来源:学科网]', '[来源:学科网', '[来源:学科', '来源:学|科|网]', '[来源:学_科_网Z_X_X_K]', '（来源：学#科#网）', '[来源:学_科_网]', '源:学_科_网]', '来源:学_科_网]', '[来源:学|科|网', '[来源:学,科,网Z,X,X,K]', '[来源:学&科&网Z&X&X&K]', '[来源:学*科*网Z*X*X*K]', '[来源:学&科&网]', '[来源:学.科.网]', '[来源:学#科#网Z#X#X#K]', '[来源:学,科,网]', '[来源:学。科。网]', '[来源:学*科*网]', '来源:学&#167;科&#167;网]', '学-科网', '来源:学.科.网Z.X.X.K', '学科+网', '[来源:学&#167;科&#167;网]', '[来源:学科网ZXXK]', '[来源:学科网]', '[来源:学#科#网]', '[来源:学+科+网]', '[来源:学|科|网Z|X|X|K]', '[来源:学|科|网]', '[来源:学.科.网Z.X.X.K]', '学！科网'], [''], $body);
+
         return $body;
     }
+
     public function decode($text, $hash)
     {
         $text = openssl_decrypt(base64_decode(urldecode($text)), 'aes-256-cbc', base64_decode($this->key), OPENSSL_RAW_DATA, base64_decode($this->iv));
@@ -419,13 +433,11 @@ class Tools
     {
         return '/bishun/'.sprintf('%03d', $id / 999).'/'.sprintf('%03d', $id / 666).'/'.sprintf('%03d', $id / 333).'/'.$id.'.svg';
     }
+
     /**
-     * 替换特殊字符
-     *
-     * @param string $strParam
-     * @return string
+     * 替换特殊字符.
      */
-    public function replace_specialChar(string $strParam):string
+    public function replace_specialChar(string $strParam): string
     {
         $regex = "/\/|\～|\，|\。|\！|\？|\“|\”|\【|\】|\『|\』|\：|\；|\《|\》|\’|\‘|\ |\·|\~|\!|\@|\#|\\$|\%|\^|\&|\*|\(|\)|\_|\+|\{|\}|\:|\<|\>|\?|\[|\]|\,|\.|\/|\;|\'|\`|\-|\=|\\\|\|/";
 
