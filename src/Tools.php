@@ -30,7 +30,9 @@ class Tools
     {
         $kw = [];
         for ($i = 0; $i < mb_strlen($keyWord); ++$i) {
-            $kw[] = mb_substr($keyWord, $i, 1);
+            if(mb_substr($keyWord, $i, 1)!=" "){
+                $kw[] = mb_substr($keyWord, $i, 1);
+            }            
         }
         $keyWord = implode('|', $kw);
 
