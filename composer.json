@@ -22,7 +22,9 @@
     "ext-libxml": "*",
     "ext-openssl": "*",
     "ext-mbstring": "*",
-    "ext-simplexml": "*"
+    "ext-simplexml": "*",
+    "symfony/finder": "*",
+    "phpseclib/phpseclib": "*"
   },
   "autoload": {
     "classmap": [
@@ -30,6 +32,7 @@
     ],
     "psr-4": {
       "Cmmia\\Encrypt\\": "src/",
+      "Cmmia\\ftp\\SyncFtp\\": "src/ftp/",
       "WePay\\": "src/pay/WePay/",
       "WeMini\\": "src/pay/WeMini/",
       "WeChat\\": "src/pay/WeChat/",
