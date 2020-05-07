@@ -213,7 +213,7 @@ class FenYe
         $queryString = $uri->getQuery()??"";
         //return $uri->getScheme() . '://' . $uri->getHost() . $uri->getPath() . $queryString;
         
-        $currentUrl = $uri->getScheme() . '://' . $uri->getHost() . $uri->getPath();
+        $currentUrl = '//' . $uri->getHost() . $uri->getPath();
         $prevUrl = $currentUrl;
         if (!$queryString) {
             $this->route = $prevUrl.'?'.$this->pageParam.'=';

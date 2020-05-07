@@ -89,8 +89,10 @@ class Tools
     {
         $body = preg_replace('/(.*?)(alt=["\']?.*?["\']?)(\s+|>)/', '$1$3', $body); 
         $body = str_replace(['<font>'], ['<span class="dot">'], $body);
+        $body = str_replace(['`'], ["'"], $body);
+        $body = str_replace(['<table name="optionsTable"'], ['<table name="XZoptions"'], $body);
         $body = str_replace(['</font>'], ['</span>'], $body);
-        $body = str_replace(['[来源:学*科*网Z*X*X*K]','[来源:Z&#167;xx&#167;k．Com]','[来源:学。科。网Z。X。X。K]','[来源:Z,xx,k','[来源:Z&xx&k.Com]','[来源:Z*xx*k.Com]','W W W K S 5 U . C O M','[来源:Z。xx。k.Com]','[来源:Z+xx+k.Com]','[来源:Z|xx|k.Com]','[:Z+xx+k.Com]','[来源:学&#167;科&#167;网Z&#167;X&#167;X&#167;K]','[来源:Z&#167;xx&#167;k.Com]','[来源:Z#xx#k.','K^S*5U','K|S|5U','k*s*5u','Ks**5u','Ks*5u','ks**5u','ks*5u','<sup> ks*5*u</sup>','*ks*5*u','Ks*5*u','k^s*5#u','k*s*5*u','K*s^5#u','k!s#5^u','k*s#5^u','KS5U','ks5u','<sub>ks5u</sub><br>','<sub>ks5uks5ukks5u</sub><br>','ks5*','ks5<br>u','Ks5','ks5ks','ks5*u','Ks5*u','ks5*u*','学科网', 'ZXXK', 'Zxxk', 'zxxk', 'ZXXK]', '【来源：学科网ZXXK】', '[来源:Zxxk.', '<u>来源:学科网ZXXK]</u>', '<sub>zxxk</sub><br>', '学科网ZXXK]', '[来源：学科网ZXXK]', '<i>来源:学科网ZXXK]</i>', '网ZXXK]', 'ZXXK]', '（来源：Zxxk．Com）', '[来源:Zxxk.Com]', '[来源:学+（&#160;&#160;&#160;）科+网Z+X+X+K]', '学科网[来源:Zxxk.Com]', '<br>学科网<br>', '<u>学科网</u>', '[来源:学+科+网Z+X+X+K]', '[来源:学。科。网Z。', '[来源:学科网]', '[来源:学科网', '[来源:学科', '来源:学|科|网]', '[来源:学_科_网Z_X_X_K]', '（来源：学#科#网）', '[来源:学_科_网]', '源:学_科_网]', '来源:学_科_网]', '[来源:学|科|网', '[来源:学,科,网Z,X,X,K]', '[来源:学&科&网Z&X&X&K]', '[来源:学*科*网Z*X*X*K]', '[来源:学&科&网]', '[来源:学.科.网]', '[来源:学#科#网Z#X#X#K]', '[来源:学,科,网]', '[来源:学。科。网]', '[来源:学*科*网]', '来源:学&#167;科&#167;网]', '学-科网', '来源:学.科.网Z.X.X.K', '学科+网', '[来源:学&#167;科&#167;网]', '[来源:学科网ZXXK]', '[来源:学科网]', '[来源:学#科#网]', '[来源:学+科+网]', '[来源:学|科|网Z|X|X|K]', '[来源:学|科|网]', '[来源:学.科.网Z.X.X.K]', '学！科网'], [''], $body);
+        $body = str_replace(['中.考.资.源.网','www.zk5u.com中考资源网','www.zk5u.com中%考资源网','中%考资源网','中考资源网','www.zk5u.com','w.w.^w.k.&s.5*u.c.#om','高☆考♂资♀源*网','<sub>高☆考♂资♀源*网</sub>','高☆考♂资♀源*网高☆考♂资♀源*网','<sub>高☆考♂资♀源*网高☆考♂资♀源*网</sub>','高☆考♂资♀源€网','[来源:高&考%资(源#网]','[来源:高&考%资(源#网KS5U.COM]','高*考*资*源*网','高.考.资.源.网','来源：高考资源网','高￥考^资@源*网','高*考#资^源*网','高考资源网','[来源:学*科*网Z*X*X*K]','[来源:Z&#167;xx&#167;k．Com]','[来源:学。科。网Z。X。X。K]','[来源:Z,xx,k','[来源:Z&xx&k.Com]','[来源:Z*xx*k.Com]','W W W K S 5 U . C O M','[来源:Z。xx。k.Com]','[来源:Z+xx+k.Com]','[来源:Z|xx|k.Com]','[:Z+xx+k.Com]','[来源:学&#167;科&#167;网Z&#167;X&#167;X&#167;K]','[来源:Z&#167;xx&#167;k.Com]','[来源:Z#xx#k.','K^S*5U','K|S|5U','k*s*5u','Ks**5u','Ks*5u','ks**5u','ks*5u','<sup> ks*5*u</sup>','*ks*5*u','Ks*5*u','k^s*5#u','k*s*5*u','K*s^5#u','k!s#5^u','k*s#5^u','KS5U','ks5u','<sub>ks5u</sub><br>','<sub>ks5uks5ukks5u</sub><br>','ks5*','ks5<br>u','Ks5','ks5ks','ks5*u','Ks5*u','ks5*u*','学科网', 'ZXXK', 'Zxxk', 'zxxk', 'ZXXK]', '【来源：学科网ZXXK】', '[来源:Zxxk.', '<u>来源:学科网ZXXK]</u>', '<sub>zxxk</sub><br>', '学科网ZXXK]', '[来源：学科网ZXXK]', '<i>来源:学科网ZXXK]</i>', '网ZXXK]', 'ZXXK]', '（来源：Zxxk．Com）', '[来源:Zxxk.Com]', '[来源:学+（&#160;&#160;&#160;）科+网Z+X+X+K]', '学科网[来源:Zxxk.Com]', '<br>学科网<br>', '<u>学科网</u>', '[来源:学+科+网Z+X+X+K]', '[来源:学。科。网Z。', '[来源:学科网]', '[来源:学科网', '[来源:学科', '来源:学|科|网]', '[来源:学_科_网Z_X_X_K]', '（来源：学#科#网）', '[来源:学_科_网]', '源:学_科_网]', '来源:学_科_网]', '[来源:学|科|网', '[来源:学,科,网Z,X,X,K]', '[来源:学&科&网Z&X&X&K]', '[来源:学*科*网Z*X*X*K]', '[来源:学&科&网]', '[来源:学.科.网]', '[来源:学#科#网Z#X#X#K]', '[来源:学,科,网]', '[来源:学。科。网]', '[来源:学*科*网]', '来源:学&#167;科&#167;网]', '学-科网', '来源:学.科.网Z.X.X.K', '学科+网', '[来源:学&#167;科&#167;网]', '[来源:学科网ZXXK]', '[来源:学科网]', '[来源:学#科#网]', '[来源:学+科+网]', '[来源:学|科|网Z|X|X|K]', '[来源:学|科|网]', '[来源:学.科.网Z.X.X.K]', '学！科网'], [''], $body);
         return $body;
     }
 
@@ -103,14 +105,36 @@ class Tools
 
         return $text;
     }
-
-    public function kpUrl(int $subjectId, int $kpId)
-    {//知识点对应的url
-        $kpIdStr = sprintf('%010d', $kpId);
-
-        return '/k'.$this->getUriBySubjectId($subjectId).substr($kpIdStr, 0, 5).'/'.md5($subjectId.'_'.$kpId.'k_k'.$subjectId.'_'.$kpId.'_'.$kpIdStr).substr($kpIdStr, -5).'.html';
+    public function getKpIdByQUrl(string $hash):int{
+        return $this->idD($hash,"kq");
     }
-
+    public function getChapterIdByQUrl(string $hash):int{
+        return $this->idD($hash,"cq");
+    }
+    public function getKpIdByPUrl(string $hash):int{
+        return $this->idD($hash,"kp");
+    }
+    public function getChapterIdByPUrl(string $hash):int{
+        return $this->idD($hash,"cp");
+    }
+    public function kpPUrl(int $subjectId, int $kpId)//知识点对应试卷
+    {//知识点对应的url
+        if($kpId===0){
+            return '/kp'.$this->getUriBySubjectId($subjectId);
+        }
+        else{
+            return '/kp'.$this->getUriBySubjectId($subjectId).$this->idE($kpId,"kp")."/";
+        }
+    }
+    public function kpQUrl(int $subjectId, int $kpId)//知识点对应试题
+    {//知识点对应的url
+        if($kpId===0){
+            return '/kq'.$this->getUriBySubjectId($subjectId);
+        }
+        else{
+            return '/kq'.$this->getUriBySubjectId($subjectId).$this->idE($kpId,"kq")."/";
+        }
+    }
     public function cUrl(int $subjectId, int $cId)
     {//章节对应的url
         $cIdStr = sprintf('%010d', $cId);
@@ -398,19 +422,19 @@ class Tools
         return $filePath.$id.'.mp3';
     }
 
-    public function idE(int $id): string
+    public function idE(int $id,string $key='XJQ'): string
     {
-        $hash = md5($id.'XJQ');
+        $hash = md5($id.$key);
         $mod = 0 === $id % 10 ? 1 : $id % 10;
 
         return substr($hash, 0, $mod).$id.$mod;
     }
 
-    public function idD(string $str): int
+    public function idD(string $str,string $key='XJQ'): int
     {
         $mod = (int) substr($str, -1);
         $id = (int) substr($str, $mod, strlen($str) - $mod - 1);
-        $hash = md5($id.'XJQ');
+        $hash = md5($id.$key);
         if (substr($hash, 0, $mod) !== substr($str, 0, $mod)) {
             $id = 0;
         }
@@ -442,5 +466,68 @@ class Tools
         $regex = "/\/|\～|\，|\。|\！|\？|\“|\”|\【|\】|\『|\』|\：|\；|\《|\》|\’|\‘|\ |\·|\~|\!|\@|\#|\\$|\%|\^|\&|\*|\(|\)|\_|\+|\{|\}|\:|\<|\>|\?|\[|\]|\,|\.|\/|\;|\'|\`|\-|\=|\\\|\|/";
 
         return preg_replace($regex, ' ', $strParam);
+    }
+    public function getXkwIdBySubjectId(int $subject_id)
+    {
+        $arr=[1=>24,2=>23,3=>25,4=>32,5=>31,6=>1,7=>2,8=>3,9=>4,10=>5,11=>6,12=>9,13=>7,14=>8,15=>30,16=>26,17=>29,18=>10,19=>11,20=>12,21=>13,22=>14,23=>15,24=>16,25=>17,26=>18,27=>27,28>28];
+        return $arr[$subject_id]??0;
+    }
+
+    public function getPicBase64ByPicFile(string $file):string
+    {
+        $base64_file = '';
+        if(file_exists($file)){
+            $hand = fopen($file,"rb");
+            $content = fread($hand,filesize($file));
+            $base64_file = base64_encode($content);
+            //$base64_file = str_replace("\\",'',$base64_file);
+            //添加base64文件头
+            $pos = stripos($base64_file,"base64");
+            if($pos && $pos < 50){
+                if(substr($base64_file,($pos + strlen("base64")),1) == ","){
+                    $pos = $pos + strlen("base64") + 1;
+                }else{
+                    $pos = $pos + strlen("base64");
+                }
+            }else{
+                $pos = 0;
+            }
+            $base64_file = "data:image/png;base64," . substr($base64_file,$pos);
+        }
+        return $base64_file;
+    }
+
+    function setKpTree(int $subjectId,array $arr){                                           
+        if (!empty($arr['children'])) {        
+            echo '<li class="tree-node tree-children"><div class="tree-node-name"> <i class="tree-icon"></i><a href="'.$this->kpQUrl($subjectId, $arr['id']).'" class="tree-anchor font-item" title="'.$arr['name'].'">'.$arr['name'].'</a></div>';                                                
+            echo '<ul class="tree-ul">';
+            foreach ($arr['children'] as $av) {
+                $this->setKpTree($subjectId,$av);
+            }
+            echo '</ul>';
+            echo '</li>';
+        } else {
+        echo '<li class="tree-node tree-leaf"><div class="tree-node-name"><i class="tree-icon"></i><a href="'.$this->kpQUrl($subjectId, $arr['id']).'" class="tree-anchor font-item" title="'.$arr['name'].'">'.$arr['name'].'</a></div></li>';
+        }                                          
+    }
+
+    function setChapterTree(string $url,array $arr,int $cpId){           
+        if($cpId === $arr['id']){
+            $tree_status=" tree-open";
+        }
+        else{
+            $tree_status = "";
+        }                                
+        if (!empty($arr['children'])) {            
+            echo '<li class="tree-node tree-children'.$tree_status.'"><div class="tree-node-name"> <i class="tree-icon"></i><a href="'.$url.$this->idE($arr['id'],"cq").'/" class="tree-anchor font-item" title="'.$arr['name'].'">'.$arr['name'].'</a></div>';                                                
+            echo '<ul class="tree-ul">';
+            foreach ($arr['children'] as $av) {
+                $this->setChapterTree($url,$av,$cpId);
+            }
+            echo '</ul>';
+            echo '</li>';
+        } else {
+        echo '<li class="tree-node tree-leaf'.$tree_status.'"><div class="tree-node-name"><i class="tree-icon"></i><a href="'.$url.$this->idE($arr['id'],"cq").'/" class="tree-anchor font-item" title="'.$arr['name'].'">'.$arr['name'].'</a></div></li>';
+        }                                          
     }
 }

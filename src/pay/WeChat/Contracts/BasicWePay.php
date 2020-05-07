@@ -81,9 +81,9 @@ class BasicWePay
      * @return array
      * @throws InvalidResponseException
      */
-    public function getNotify()
+    public function getNotify($data)
     {
-        $data = Tools::xml2arr(file_get_contents('php://input'));
+        $data = Tools::xml2arr($data);
         if (isset($data['sign']) && $this->getPaySign($data) === $data['sign']) {
             return $data;
         }
@@ -182,7 +182,9 @@ class BasicWePay
         $params = $this->params->merge($data);
         $needSignType && ($params['sign_type'] = strtoupper($signType));
         $params['sign'] = $this->getPaySign($params, $signType);
+        echo Tools::arr2xml($params);
         $result = Tools::xml2arr(Tools::post($url, Tools::arr2xml($params), $option));
+        print_r($result);
         if ($result['return_code'] !== 'SUCCESS') {
             throw new InvalidResponseException($result['return_msg'], '0');
         }

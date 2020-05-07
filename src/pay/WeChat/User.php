@@ -1,5 +1,4 @@
 <?php
-
 namespace WeChat;
 
 use WeChat\Contracts\BasicWeChat;

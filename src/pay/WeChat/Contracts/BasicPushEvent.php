@@ -71,13 +71,14 @@ class BasicPushEvent
         if (empty($options['token'])) {
             throw new InvalidArgumentException("Missing Config -- [token]");
         }
+        $request = context()->getRequest();
         // 参数初始化
         $this->config = new DataArray($options);
-        $this->input = new DataArray($_REQUEST);
-        $this->appid = $this->config->get('appid');
+        $this->input = new DataArray($request->input());
+        $this->appid = $this->config->get('appid');        
         // 推送消息处理
-        if ($_SERVER['REQUEST_METHOD'] == "POST") {
-            $this->postxml = file_get_contents("php://input");
+        if ($request->getMethod() == "POST") {
+            $this->postxml = $request->raw();
             $this->encryptType = $this->input->get('encrypt_type');
             if ($this->isEncrypt()) {
                 if (empty($options['encodingaeskey'])) {
@@ -95,9 +96,8 @@ class BasicPushEvent
                 list($this->postxml, $this->appid) = [$array[1], $array[2]];
             }
             $this->receive = new DataArray(Tools::xml2arr($this->postxml));
-        } elseif ($_SERVER['REQUEST_METHOD'] == "GET" && $this->checkSignature()) {
-            @ob_clean();
-            exit($this->input->get('echostr'));
+        } elseif ($request->getMethod() == "GET" && $this->checkSignature()) {
+            return context()->getResponse()->withData($this->input->get('echostr'));
         } else {
             throw new InvalidResponseException('Invalid interface request.', '0');
         }
@@ -120,7 +120,7 @@ class BasicPushEvent
      * @return string
      * @throws InvalidDecryptException
      */
-    public function reply(array $data = [], $return = false, $isEncrypt = false)
+    public function reply(array $data = [], $return = true, $isEncrypt = false)
     {
         $xml = Tools::arr2xml(empty($data) ? $this->message : $data);
         if ($this->isEncrypt() || $isEncrypt) {
@@ -142,7 +142,6 @@ class BasicPushEvent
             $xml = sprintf($format, $encrypt, $signature, $timestamp, $nonce);
         }
         if ($return) return $xml;
-        @ob_clean();
         echo $xml;
     }
 
