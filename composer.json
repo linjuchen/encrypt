@@ -27,7 +27,7 @@
   "autoload": {
     "classmap": [
       "src/pay/We.php",
-      "phpQuery.php"
+      "src/phpQuery.php"
     ],
     "psr-4": {
       "Cmmia\\Encrypt\\": "src/",
