@@ -22,7 +22,10 @@
     "ext-libxml": "*",
     "ext-openssl": "*",
     "ext-mbstring": "*",
-    "ext-simplexml": "*"
+    "ext-simplexml": "*",
+    "doctrine/collections": "^1.5",
+    "symfony/dependency-injection": "*",
+    "symfony/cache": "*"
   },
   "autoload": {
     "classmap": [
