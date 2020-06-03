@@ -26,8 +26,8 @@
   },
   "autoload": {
 	"files":[
-     "API/AgentApi.class.php",
-     "API/MessageApi.class.php"
+     "src/bizWx/API/AgentApi.class.php",
+     "src/bizWx/API/MessageApi.class.php"
 	],
     "classmap": [
       "src/pay/We.php",
