@@ -22,24 +22,21 @@
     "ext-libxml": "*",
     "ext-openssl": "*",
     "ext-mbstring": "*",
-    "ext-simplexml": "*",
-    "doctrine/collections": "^1.5",
-    "symfony/dependency-injection": "*",
-    "symfony/cache": "*"
+    "ext-simplexml": "*"
   },
   "autoload": {
     "classmap": [
       "src/pay/We.php",
       "src/phpQuery.php",
-      "src/Mobile_Detect.php"
+      "src/Mobile_Detect.php",
+      "src/bizWx/Api.class.php"
     ],
     "psr-4": {
       "Cmmia\\Encrypt\\": "src/",
       "WePay\\": "src/pay/WePay/",
       "WeMini\\": "src/pay/WeMini/",
       "WeChat\\": "src/pay/WeChat/",
-      "AliPay\\": "src/pay/AliPay/",
-      "WeWork\\": "src/bizWx/"
+      "AliPay\\": "src/pay/AliPay/"
     }
   }
 }
