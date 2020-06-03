@@ -25,6 +25,10 @@
     "ext-simplexml": "*"
   },
   "autoload": {
+	"files":[
+     "API/AgentApi.class.php",
+     "API/MessageApi.class.php"
+	],
     "classmap": [
       "src/pay/We.php",
       "src/phpQuery.php",
@@ -36,8 +40,7 @@
       "WePay\\": "src/pay/WePay/",
       "WeMini\\": "src/pay/WeMini/",
       "WeChat\\": "src/pay/WeChat/",
-      "AliPay\\": "src/pay/AliPay/",
-      "WeixinAPI\\API\\": "src/wizWx/API/"
+      "AliPay\\": "src/pay/AliPay/"
     }
   }
 }
