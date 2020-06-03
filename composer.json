@@ -35,7 +35,8 @@
       "WePay\\": "src/pay/WePay/",
       "WeMini\\": "src/pay/WeMini/",
       "WeChat\\": "src/pay/WeChat/",
-      "AliPay\\": "src/pay/AliPay/"
+      "AliPay\\": "src/pay/AliPay/",
+      "WeWork\\": "src/bizWx/"
     }
   }
 }
