@@ -39,7 +39,7 @@
       "WeMini\\": "src/pay/WeMini/",
       "WeChat\\": "src/pay/WeChat/",
       "AliPay\\": "src/pay/AliPay/",
-      "WeixinAPI\\": "src/bizWx/"
+      "WeixinAPI\\API\\": "src/bizWx/"
     }
   }
 }
