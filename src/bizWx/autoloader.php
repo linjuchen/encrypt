@@ -25,7 +25,7 @@ class autoloader
         if (!isset($_map[$class])) {
             $class = explode('\\', $class);
             $rootpath = array_shift($class);
-            if ($rootpath != "bizWx") {
+            if ($rootpath != "WeixinAPI") {
                 return;
             }
 
