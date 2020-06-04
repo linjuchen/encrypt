@@ -26,7 +26,7 @@
   },
   "autoload": {
     "files":[
-      "src/wizWx/autoloader.php"
+      "src/bizWx/autoloader.php"
     ],
     "classmap": [
       "src/pay/We.php",
@@ -38,7 +38,8 @@
       "WePay\\": "src/pay/WePay/",
       "WeMini\\": "src/pay/WeMini/",
       "WeChat\\": "src/pay/WeChat/",
-      "AliPay\\": "src/pay/AliPay/"
+      "AliPay\\": "src/pay/AliPay/",
+      "WeixinAPI\\": "src/bizWx/"
     }
   }
 }
